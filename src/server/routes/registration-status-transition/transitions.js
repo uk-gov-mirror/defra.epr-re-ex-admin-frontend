@@ -10,7 +10,7 @@
  * @property {string} buttonClasses
  * @property {string} errorMessage - Flash fallback when the backend gives no message
  * @property {string} logMessage
- * @property {boolean} [hasGrantFields] - Confirm page collects validFrom + validTo + registrationNumber
+ * @property {boolean} [hasGrantFields] - Confirm page collects validFrom + registrationNumber
  */
 
 const WARNING_BUTTON_CLASS = 'govuk-button--warning'

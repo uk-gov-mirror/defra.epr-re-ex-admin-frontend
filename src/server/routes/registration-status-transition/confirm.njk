@@ -41,21 +41,6 @@
             ]
           }) }}
 
-          {{ govukDateInput({
-            id: "valid-to",
-            namePrefix: "validTo",
-            fieldset: {
-              legend: { text: "Valid to", classes: "govuk-fieldset__legend--s" }
-            },
-            hint: { text: "For example, 27 3 2026" },
-            errorMessage: { text: errors.validTo } if errors and errors.validTo,
-            items: [
-              { name: "day", classes: "govuk-input--width-2", value: values.validTo.day },
-              { name: "month", classes: "govuk-input--width-2", value: values.validTo.month },
-              { name: "year", classes: "govuk-input--width-4", value: values.validTo.year }
-            ]
-          }) }}
-
           {{ govukInput({
             id: "registration-number",
             name: "registrationNumber",
