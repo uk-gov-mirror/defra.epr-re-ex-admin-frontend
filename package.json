@@ -12,7 +12,7 @@
     "#vite/*": "./.vite/*"
   },
   "engines": {
-    "node": "^24.20.0"
+    "node": "^24.21.0"
   },
   "scripts": {
     "schema:compile": "ajv compile --all-errors --verbose --data -c ajv-formats -s ./src/server/common/schemas/organisation.json -o ./src/server/common/schemas/organisation.ajv.js --code-es5 && node -e \"const fs=require('fs');const f='./src/server/common/schemas/organisation.ajv.js';fs.writeFileSync(f,'// @ts-nocheck\\n'+fs.readFileSync(f,'utf8'))\"",
