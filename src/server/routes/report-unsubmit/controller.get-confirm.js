@@ -5,8 +5,8 @@ import { toReportingPeriods } from '#server/common/helpers/reporting-periods.js'
 import { periodSubmissionPath } from '#server/common/helpers/backend-paths.js'
 import { fetchReportingPeriods } from '#server/common/helpers/fetch-reporting-periods.js'
 import {
-  registrationBreadcrumbs,
-  registrationOverviewUrl,
+  registrationYearBreadcrumbs,
+  registrationYearUrl,
   reportUnsubmitUrl
 } from '#server/common/helpers/page-urls.js'
 
@@ -82,7 +82,7 @@ export const reportUnsubmitConfirmGetController = {
     const { registrationNumber, year, cadence, period, submissionNumber } =
       request.params
 
-    const overviewUrl = registrationOverviewUrl(request.params)
+    const yearUrl = registrationYearUrl(request.params)
 
     const [report, calendarPeriod] = await Promise.all([
       fetchPeriodSubmission(request),
@@ -92,14 +92,14 @@ export const reportUnsubmitConfirmGetController = {
     const refusal = refusalReason(report, calendarPeriod)
     if (refusal) {
       request.yar.set('error', refusal)
-      return h.redirect(overviewUrl)
+      return h.redirect(yearUrl)
     }
 
     return h.view('routes/report-unsubmit/confirm', {
       pageTitle: request.route.settings.app?.pageTitle,
       heading: PAGE_TITLE,
-      breadcrumbs: registrationBreadcrumbs(request.params),
-      overviewUrl,
+      breadcrumbs: registrationYearBreadcrumbs(request.params),
+      yearUrl,
       postUrl: reportUnsubmitUrl(request.params),
       registrationNumber,
       formattedPeriod: formatPeriod(period, cadence),

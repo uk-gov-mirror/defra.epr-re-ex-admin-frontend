@@ -194,7 +194,7 @@ describe('#wasteBalanceEventsController', () => {
       expect(statusCode).toBe(statusCodes.notFound)
     })
 
-    test('Should render breadcrumbs back to registration overview', async () => {
+    test("Should render breadcrumbs back to the registration's year", async () => {
       useMockBackend()
 
       const { result } = await server.inject({
@@ -222,7 +222,8 @@ describe('#wasteBalanceEventsController', () => {
         {
           text: 'Registration overview',
           href: `${registration}/overview`
-        }
+        },
+        { text: '2026', href: `${registration}/years/2026` }
       ])
     })
 

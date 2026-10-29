@@ -1,6 +1,6 @@
 import { fetchJsonFromBackend } from '#server/common/helpers/fetch-json-from-backend.js'
 import { registrationPath } from '#server/common/helpers/backend-paths.js'
-import { registrationBreadcrumbs } from '#server/common/helpers/page-urls.js'
+import { registrationYearBreadcrumbs } from '#server/common/helpers/page-urls.js'
 
 /**
  * Renders the whole stored summary log document as pretty-printed JSON for
@@ -24,7 +24,10 @@ export const summaryLogDocumentGetController = {
 
     return h.view('routes/summary-log-document/index', {
       pageTitle: request.route.settings.app.pageTitle,
-      breadcrumbs: registrationBreadcrumbs(request.params),
+      breadcrumbs: registrationYearBreadcrumbs({
+        ...request.params,
+        year: String(summaryLog.year)
+      }),
       summaryLog
     })
   }

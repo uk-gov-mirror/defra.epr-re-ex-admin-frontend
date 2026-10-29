@@ -1,6 +1,6 @@
 import { fetchJsonFromBackend } from '#server/common/helpers/fetch-json-from-backend.js'
 import { accreditationPath } from '#server/common/helpers/backend-paths.js'
-import { registrationOverviewUrl } from '#server/common/helpers/page-urls.js'
+import { accreditationYearUrl } from '#server/common/helpers/page-urls.js'
 import { generateCsv } from './controller.download.js'
 
 const statuses =
@@ -79,7 +79,7 @@ export const prnActivityScopedDownloadController = {
 
       request.yar.set('error', errorMessage)
 
-      return h.redirect(registrationOverviewUrl(request.params))
+      return h.redirect(accreditationYearUrl(request.params))
     }
   }
 }

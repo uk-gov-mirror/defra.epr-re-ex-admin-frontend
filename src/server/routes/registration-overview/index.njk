@@ -1,8 +1,8 @@
 {% extends 'layout.njk' %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "registration-summary/macro.njk" import registrationSummary %}
-{% from "registration-reports/macro.njk" import registrationReports %}
-{% from "registration-summary-logs/macro.njk" import registrationSummaryLogs %}
 
 {% block content %}
   <div class="govuk-width-container">
@@ -21,14 +21,42 @@
 
     {{ registrationSummary({
       registration: registration,
-      wasteBalance: wasteBalance,
-      isExporter: isExporter,
-      wasteBalanceEventsUrl: wasteBalanceEventsUrl,
-      overseasSitesUrl: overseasSitesUrl,
-      wasteRecordsDownloadUrl: wasteRecordsDownloadUrl,
-      prnActivityDownloadUrl: prnActivityDownloadUrl
+      wasteRecordsDownloadUrl: wasteRecordsDownloadUrl
     }) }}
-    {{ registrationReports({ rows: reportRows }) }}
-    {{ registrationSummaryLogs({ rows: summaryLogRows }) }}
+
+    <div class="govuk-grid-row">
+      <div id="years" class="govuk-grid-column-two-thirds">
+        {% if yearRows.length %}
+          {% set tableRows = [] %}
+          {% for row in yearRows %}
+            {% set viewHtml %}
+              <a class="govuk-link govuk-link--no-visited-state" href="{{ row.viewUrl }}">View<span class="govuk-visually-hidden"> {{ row.year }}</span></a>
+            {% endset %}
+            {% set tableRows = tableRows.concat([[
+              { text: row.year },
+              { html: govukTag({ text: row.registrationStatus }) },
+              { html: govukTag({ text: row.accreditationStatus, classes: "govuk-tag--grey" if not row.isAccredited }) },
+              { text: row.accreditationNumber },
+              { html: viewHtml }
+            ]]) %}
+          {% endfor %}
+
+          {{ govukTable({
+            caption: "Years",
+            captionClasses: "govuk-table__caption--m",
+            head: [
+              { text: "Year" },
+              { text: "Registration status" },
+              { text: "Accreditation status" },
+              { text: "Accreditation number" },
+              { text: "Actions" }
+            ],
+            rows: tableRows
+          }) }}
+        {% else %}
+          <p class="govuk-body">No years</p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 {% endblock %}

@@ -1,7 +1,8 @@
 import { accreditationParams } from '#server/common/helpers/natural-keys/accreditation-params.js'
 import {
   accreditedYearGETController,
-  registeredOnlyYearGETController
+  registeredOnlyYearGETController,
+  registrationYearRedirectController
 } from './controller.get.js'
 
 export const registrationYear = {
@@ -24,6 +25,14 @@ export const registrationYear = {
           ...registeredOnlyYearGETController,
           options: {
             app: { pageTitle: 'Registered-only year' },
+            validate: { params: accreditationParams }
+          }
+        },
+        {
+          method: 'GET',
+          path: '/organisations/{organisationNumber}/registrations/{registrationNumber}/years/{year}',
+          ...registrationYearRedirectController,
+          options: {
             validate: { params: accreditationParams }
           }
         }

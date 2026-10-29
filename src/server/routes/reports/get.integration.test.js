@@ -143,14 +143,14 @@ describe('#reportDetailController', () => {
       )
     })
 
-    test('Should render breadcrumbs for Organisations, Organisation overview and Registration overview', async () => {
+    test('Should render breadcrumbs for Organisations, Organisation overview, Registration overview and the year', async () => {
       serveReportAt(url)
 
       const { result } = await server.inject({ method: 'GET', url, auth })
 
       const $ = cheerio.load(result)
       const breadcrumbLinks = $('.govuk-breadcrumbs__link')
-      expect(breadcrumbLinks).toHaveLength(3)
+      expect(breadcrumbLinks).toHaveLength(4)
       expect($(breadcrumbLinks[0]).text()).toEqual('Organisations')
       expect($(breadcrumbLinks[0]).attr('href')).toEqual('/organisations')
       expect($(breadcrumbLinks[1]).text()).toEqual('Organisation overview')
@@ -160,6 +160,10 @@ describe('#reportDetailController', () => {
       expect($(breadcrumbLinks[2]).text()).toEqual('Registration overview')
       expect($(breadcrumbLinks[2]).attr('href')).toEqual(
         `${registration}/overview`
+      )
+      expect($(breadcrumbLinks[3]).text()).toEqual('2026')
+      expect($(breadcrumbLinks[3]).attr('href')).toEqual(
+        `${registration}/years/2026`
       )
     })
 

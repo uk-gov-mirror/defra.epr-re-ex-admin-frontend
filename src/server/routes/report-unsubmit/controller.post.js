@@ -3,8 +3,8 @@ import { formatPeriod } from '#server/common/helpers/format-reporting-period.js'
 import { statusCodes } from '#server/common/constants/status-codes.js'
 import { periodSubmissionUnsubmitPath } from '#server/common/helpers/backend-paths.js'
 import {
-  registrationBreadcrumbs,
-  registrationOverviewUrl
+  registrationYearBreadcrumbs,
+  registrationYearUrl
 } from '#server/common/helpers/page-urls.js'
 
 /**
@@ -20,7 +20,7 @@ export const reportUnsubmitPostController = {
     const { registrationNumber, year, cadence, period, submissionNumber } =
       request.params
 
-    const overviewUrl = registrationOverviewUrl(request.params)
+    const yearUrl = registrationYearUrl(request.params)
 
     /** @type {string | null} */
     let reason = null
@@ -46,10 +46,10 @@ export const reportUnsubmitPostController = {
 
     return h.view('routes/report-unsubmit/result', {
       pageTitle: 'Unsubmit report',
-      breadcrumbs: registrationBreadcrumbs(request.params),
+      breadcrumbs: registrationYearBreadcrumbs(request.params),
       success: false,
       reason,
-      overviewUrl,
+      yearUrl,
       registrationNumber,
       formattedPeriod: formatPeriod(period, cadence),
       year,

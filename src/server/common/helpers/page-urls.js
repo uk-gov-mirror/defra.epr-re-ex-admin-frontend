@@ -30,6 +30,27 @@ export const registrationOverviewUrl = (keys) =>
   `${registrationPath(keys)}/overview`
 
 /**
+ * A registration's page for an accredited year.
+ * @param {{ organisationNumber: string, registrationNumber: string, year: string }} keys
+ */
+export const accreditationYearUrl = (keys) => accreditationPath(keys)
+
+/**
+ * A registration's page for a registered-only year.
+ * @param {{ organisationNumber: string, registrationNumber: string, year: string }} keys
+ */
+export const registeredOnlyYearUrl = (keys) =>
+  `${registrationPath(keys)}/registered-only/${encodeURIComponent(keys.year)}`
+
+/**
+ * A registration's page for a year, which sends the browser on to the
+ * accredited or registered-only page for it.
+ * @param {{ organisationNumber: string, registrationNumber: string, year: string }} keys
+ */
+export const registrationYearUrl = (keys) =>
+  `${registrationPath(keys)}/years/${encodeURIComponent(keys.year)}`
+
+/**
  * The breadcrumbs of a page under a registration.
  * @param {{ organisationNumber: string, registrationNumber: string }} keys
  */
@@ -37,6 +58,15 @@ export const registrationBreadcrumbs = (keys) => [
   { text: 'Organisations', href: '/organisations' },
   { text: 'Organisation overview', href: organisationOverviewUrl(keys) },
   { text: 'Registration overview', href: registrationOverviewUrl(keys) }
+]
+
+/**
+ * The breadcrumbs of a page under one of a registration's years.
+ * @param {{ organisationNumber: string, registrationNumber: string, year: string }} keys
+ */
+export const registrationYearBreadcrumbs = (keys) => [
+  ...registrationBreadcrumbs(keys),
+  { text: String(keys.year), href: registrationYearUrl(keys) }
 ]
 
 /**

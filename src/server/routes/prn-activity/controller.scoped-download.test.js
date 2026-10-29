@@ -152,7 +152,7 @@ describe('prn-activity scoped download controller', () => {
     expect(dataLine).toContain(',Yes,,,,ACC-2025-001,')
   })
 
-  test('Should redirect to the registration overview with a flash error on failure', async () => {
+  test('Should redirect to the accredited year page with a flash error on failure', async () => {
     mockFetchJsonFromBackend.mockRejectedValue(new Error('Network error'))
 
     const result = await prnActivityScopedDownloadController.handler(request, h)
@@ -162,7 +162,7 @@ describe('prn-activity scoped download controller', () => {
       'There was a problem downloading the PRN activity data. Please try again.'
     )
     expect(h.redirect).toHaveBeenCalledWith(
-      '/organisations/500123/registrations/R26ER5001180041PL/overview'
+      '/organisations/500123/registrations/R26ER5001180041PL/accreditations/2025'
     )
     expect(result).toBe('redirect-response')
   })

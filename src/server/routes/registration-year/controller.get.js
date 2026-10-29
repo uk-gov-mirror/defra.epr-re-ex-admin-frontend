@@ -7,7 +7,11 @@ import {
   siteOf
 } from '#server/common/helpers/fetch-organisation-view.js'
 import { notFound } from '#server/common/helpers/logging/cdp-boom.js'
-import { registrationBreadcrumbs } from '#server/common/helpers/page-urls.js'
+import {
+  accreditationYearUrl,
+  registeredOnlyYearUrl,
+  registrationBreadcrumbs
+} from '#server/common/helpers/page-urls.js'
 import {
   fetchPeriods,
   fetchSummaryLogRows,
@@ -146,3 +150,26 @@ export const accreditedYearGETController = registrationYearGETController({
 export const registeredOnlyYearGETController = registrationYearGETController({
   accredited: false
 })
+
+/**
+ * Sends a year to its accredited page when the registration held an
+ * accreditation in it, otherwise to its registered-only page.
+ */
+export const registrationYearRedirectController = {
+  async handler(request, h) {
+    const { organisationNumber, registrationNumber, year } = request.params
+    const keys = { organisationNumber, registrationNumber, year }
+
+    const organisation = await fetchOrganisationView(
+      request,
+      organisationNumber
+    )
+    const registration = registrationIn(organisation, registrationNumber)
+
+    return h.redirect(
+      accreditationFor(registration, year)
+        ? accreditationYearUrl(keys)
+        : registeredOnlyYearUrl(keys)
+    )
+  }
+}

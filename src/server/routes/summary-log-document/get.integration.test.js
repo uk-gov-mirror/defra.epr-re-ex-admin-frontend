@@ -26,6 +26,7 @@ describe('GET summary log document', () => {
     version: 3,
     summaryLogId,
     status: 'submitted',
+    year: 2026,
     uploadedAt: '2026-01-01T11:00:00.000Z',
     processingType: 'reprocessor',
     loadsByReportingPeriod: [
@@ -97,17 +98,20 @@ describe('GET summary log document', () => {
       expect(parsed.loadsByReportingPeriod).toHaveLength(1)
     })
 
-    test('Should render a breadcrumb back to the registration overview', async () => {
+    test("Should render breadcrumbs back to the registration overview and the log's year", async () => {
       stubBackendDocument(HttpResponse.json(summaryLogDocument))
 
-      const { $, statusCode } = await loadPage()
-
-      expect(statusCode).toBe(statusCodes.ok)
+      const { $ } = await loadPage()
 
       const overviewCrumb = $(
         `.govuk-breadcrumbs a[href="/organisations/${organisationNumber}/registrations/${registrationNumber}/overview"]`
       )
       expect(overviewCrumb).toHaveLength(1)
+
+      const yearCrumb = $(
+        `.govuk-breadcrumbs a[href="/organisations/${organisationNumber}/registrations/${registrationNumber}/years/2026"]`
+      )
+      expect(yearCrumb.text().trim()).toBe('2026')
     })
 
     test('Should send an old id URL to the natural-key URL', async () => {

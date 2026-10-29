@@ -29,7 +29,7 @@ describe('report-unsubmit', () => {
   const confirmUrl = `${BASE_URL}/unsubmit/confirm`
   const postUrl = `${BASE_URL}/unsubmit`
   const resultUrl = `${BASE_URL}/unsubmit/result`
-  const overviewUrl = `${REGISTRATION_URL}/overview`
+  const yearUrl = `${REGISTRATION_URL}/years/${year}`
 
   const storedOrganisation = {
     id: organisationId,
@@ -156,7 +156,7 @@ describe('report-unsubmit', () => {
     }
   }
 
-  const expectOverviewFlash = async (redirectCookie, message) => {
+  const expectYearPageFlash = async (redirectCookie, message) => {
     mswServer.use(
       http.get(`${backendUrl}/organisations/${organisationNumber}`, () =>
         HttpResponse.json({
@@ -165,7 +165,12 @@ describe('report-unsubmit', () => {
           registrations: {
             [registrationNumber]: {
               material: 'paper',
-              status: { current: 'approved' },
+              status: {
+                current: 'approved',
+                timeline: [
+                  { at: '2026-01-01T00:00:00.000Z', status: 'approved' }
+                ]
+              },
               wasteProcessingType: 'exporter',
               accreditations: {}
             }
@@ -177,9 +182,17 @@ describe('report-unsubmit', () => {
       )
     )
 
+    const { headers } = await server.inject({
+      method: 'GET',
+      url: yearUrl,
+      headers: { cookie: redirectCookie },
+      auth: authOptions
+    })
+    expect(headers.location).toBe(`${REGISTRATION_URL}/registered-only/${year}`)
+
     const { result } = await server.inject({
       method: 'GET',
-      url: overviewUrl,
+      url: `${headers.location}`,
       headers: { cookie: redirectCookie },
       auth: authOptions
     })
@@ -229,7 +242,7 @@ describe('report-unsubmit', () => {
     expect(result).toContain('January')
     expect($('body').text()).toMatch(/Submission:\s*1/)
     expect($('form').attr('action')).toBe(postUrl)
-    expect($('a:contains("Cancel")').attr('href')).toBe(overviewUrl)
+    expect($('a:contains("Cancel")').attr('href')).toBe(yearUrl)
   })
 
   describe('reached by an old id URL', () => {
@@ -304,15 +317,15 @@ describe('report-unsubmit', () => {
     })
   })
 
-  test('confirm page redirects to overview for a non-submitted report', async () => {
+  test('confirm page redirects to the year page for a non-submitted report', async () => {
     vi.mocked(getUserSession).mockResolvedValue(mockUserSession)
     stubReport({ currentStatus: 'ready_to_submit', unsubmittedAt: undefined })
 
     const { response, redirectCookie } = await getConfirm()
 
     expect(response.statusCode).toBe(statusCodes.found)
-    expect(response.headers.location).toBe(overviewUrl)
-    await expectOverviewFlash(
+    expect(response.headers.location).toBe(yearUrl)
+    await expectYearPageFlash(
       redirectCookie,
       'This report cannot be unsubmitted because it is no longer submitted.'
     )
@@ -332,7 +345,7 @@ describe('report-unsubmit', () => {
       }
     }
   ])(
-    'should redirect to overview for a report flagged for resubmission by $flaggedBy',
+    'should redirect to the year page for a report flagged for resubmission by $flaggedBy',
     async ({ resubmissionRequired }) => {
       vi.mocked(getUserSession).mockResolvedValue(mockUserSession)
       stubReport({
@@ -344,15 +357,15 @@ describe('report-unsubmit', () => {
       const { response, redirectCookie } = await getConfirm()
 
       expect(response.statusCode).toBe(statusCodes.found)
-      expect(response.headers.location).toBe(overviewUrl)
-      await expectOverviewFlash(
+      expect(response.headers.location).toBe(yearUrl)
+      await expectYearPageFlash(
         redirectCookie,
         'This report cannot be unsubmitted because a resubmission has been requested for this period.'
       )
     }
   )
 
-  it('should redirect to overview for a submission superseded by a later one', async () => {
+  it('should redirect to the year page for a submission superseded by a later one', async () => {
     vi.mocked(getUserSession).mockResolvedValue(mockUserSession)
     stubReport({ currentStatus: 'submitted', unsubmittedAt: undefined })
     stubCalendar([submittedSubmission(1), submittedSubmission(2)])
@@ -360,8 +373,8 @@ describe('report-unsubmit', () => {
     const { response, redirectCookie } = await getConfirm()
 
     expect(response.statusCode).toBe(statusCodes.found)
-    expect(response.headers.location).toBe(overviewUrl)
-    await expectOverviewFlash(
+    expect(response.headers.location).toBe(yearUrl)
+    await expectYearPageFlash(
       redirectCookie,
       'This report cannot be unsubmitted because a later submission has superseded it.'
     )
@@ -399,7 +412,7 @@ describe('report-unsubmit', () => {
     })
 
     expect(statusCode).toBe(statusCodes.found)
-    expect(headers.location).toBe(overviewUrl)
+    expect(headers.location).toBe(`${REGISTRATION_URL}/years/2025`)
   })
 
   it('should not take a superseded quarter for the month that starts with it', async () => {
@@ -495,12 +508,10 @@ describe('report-unsubmit', () => {
     expect($('.govuk-panel__title').text().trim()).toBe('Report unsubmitted')
     expect(result).toContain('R25SR500020912PA')
     expect($('body').text()).toMatch(/Submission:\s*1/)
-    expect($('a:contains("Back to registration overview")').attr('href')).toBe(
-      overviewUrl
-    )
+    expect($('a:contains("Back to 2026")').attr('href')).toBe(yearUrl)
   })
 
-  test('result page redirects to overview when accessed without completing unsubmit', async () => {
+  test('result page redirects to the year page when accessed without completing unsubmit', async () => {
     vi.mocked(getUserSession).mockResolvedValue(mockUserSession)
     stubReport({ currentStatus: 'submitted', unsubmittedAt: undefined })
 
@@ -511,6 +522,6 @@ describe('report-unsubmit', () => {
     })
 
     expect(statusCode).toBe(statusCodes.found)
-    expect(headers.location).toBe(overviewUrl)
+    expect(headers.location).toBe(yearUrl)
   })
 })

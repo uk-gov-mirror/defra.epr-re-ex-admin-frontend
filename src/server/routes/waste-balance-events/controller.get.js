@@ -3,7 +3,7 @@ import {
   accreditationPath,
   organisationPath
 } from '#server/common/helpers/backend-paths.js'
-import { registrationBreadcrumbs } from '#server/common/helpers/page-urls.js'
+import { registrationYearBreadcrumbs } from '#server/common/helpers/page-urls.js'
 
 /**
  * Shown when an event carries no December portion. The backend omits the
@@ -96,7 +96,7 @@ export const wasteBalanceEventsGETController = {
     }))
 
     return h.view('routes/waste-balance-events/index', {
-      breadcrumbs: registrationBreadcrumbs(request.params),
+      breadcrumbs: registrationYearBreadcrumbs(request.params),
       pageTitle: request.route.settings.app.pageTitle,
       heading,
       eventRows

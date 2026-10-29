@@ -6,7 +6,7 @@ import {
   toDisplayValue,
   toValidFromDisplayValue
 } from '#server/common/helpers/overseas-site-display.js'
-import { registrationBreadcrumbs } from '#server/common/helpers/page-urls.js'
+import { registrationYearBreadcrumbs } from '#server/common/helpers/page-urls.js'
 
 /**
  * @typedef {{
@@ -89,7 +89,7 @@ export const accreditationOverseasSitesGETController = {
       })
 
     return h.view('routes/accreditation-overseas-sites/index', {
-      breadcrumbs: registrationBreadcrumbs(request.params),
+      breadcrumbs: registrationYearBreadcrumbs(request.params),
       pageTitle: request.route.settings.app.pageTitle,
       heading: `${organisation.name} - ${accreditation.accreditationNumber}`,
       siteRows

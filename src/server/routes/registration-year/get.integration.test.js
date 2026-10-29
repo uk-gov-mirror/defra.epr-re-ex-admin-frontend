@@ -455,6 +455,20 @@ describe('#registrationYearController', () => {
     )
 
     test.each([
+      ['2025', `${registrationUrl}/accreditations/2025`],
+      ['2024', `${registrationUrl}/registered-only/2024`]
+    ])('Should send year %s on to its page', async (year, location) => {
+      useMockBackend()
+
+      const { statusCode, headers } = await get(
+        `${registrationUrl}/years/${year}`
+      )
+
+      expect(statusCode).toBe(statusCodes.found)
+      expect(headers.location).toBe(location)
+    })
+
+    test.each([
       ['accredited', accreditedUrl('20x5')],
       ['registered-only', registeredOnlyUrl('25')]
     ])('Should reject a malformed year on the %s page', async (_, url) => {

@@ -2,8 +2,8 @@ import { fetchJsonFromBackend } from '#server/common/helpers/fetch-json-from-bac
 import { formatPeriod } from '#server/common/helpers/format-reporting-period.js'
 import { periodSubmissionDetailPath } from '#server/common/helpers/backend-paths.js'
 import {
-  registrationBreadcrumbs,
-  registrationOverviewUrl
+  registrationYearBreadcrumbs,
+  registrationYearUrl
 } from '#server/common/helpers/page-urls.js'
 
 /**
@@ -16,7 +16,7 @@ export const reportUnsubmitResultGetController = {
     const { registrationNumber, year, cadence, period, submissionNumber } =
       request.params
 
-    const overviewUrl = registrationOverviewUrl(request.params)
+    const yearUrl = registrationYearUrl(request.params)
 
     const report = await fetchJsonFromBackend(
       request,
@@ -29,14 +29,14 @@ export const reportUnsubmitResultGetController = {
       Boolean(report.detail.status.unsubmitted?.at)
 
     if (!success) {
-      return h.redirect(overviewUrl)
+      return h.redirect(yearUrl)
     }
 
     return h.view('routes/report-unsubmit/result', {
       pageTitle: request.route.settings.app?.pageTitle,
       success: true,
-      breadcrumbs: registrationBreadcrumbs(request.params),
-      overviewUrl,
+      breadcrumbs: registrationYearBreadcrumbs(request.params),
+      yearUrl,
       registrationNumber,
       formattedPeriod: formatPeriod(period, cadence),
       year,

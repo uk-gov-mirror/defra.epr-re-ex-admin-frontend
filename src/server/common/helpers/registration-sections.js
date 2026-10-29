@@ -142,16 +142,15 @@ export const fetchWasteBalance = async (request, accreditationKeys) => {
 }
 
 /**
- * The registration's summary logs, or only those for `year` when given.
+ * The registration's summary logs for `year`.
  * @param {HapiRequest} request
  * @param {RegistrationKeys} registrationKeys
- * @param {string} [year]
+ * @param {string} year
  */
 export const fetchSummaryLogRows = async (request, registrationKeys, year) => {
-  const query = year ? `?year=${encodeURIComponent(year)}` : ''
   const { summaryLogs } = await fetchJsonFromBackend(
     request,
-    `${registrationPath(registrationKeys)}/summary-logs${query}`,
+    `${registrationPath(registrationKeys)}/summary-logs?year=${encodeURIComponent(year)}`,
     {}
   )
   // A backend without the year filter ignores ?year and returns every year.
