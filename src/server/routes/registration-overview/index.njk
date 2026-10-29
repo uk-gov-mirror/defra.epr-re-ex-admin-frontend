@@ -1,12 +1,8 @@
 {% extends 'layout.njk' %}
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
-{% macro link(url, text) -%}
-  <a class="govuk-link govuk-link--no-visited-state" href="{{ url }}">{{ text }}</a>
-{%- endmacro %}
+{% from "registration-summary/macro.njk" import registrationSummary %}
+{% from "registration-reports/macro.njk" import registrationReports %}
+{% from "registration-summary-logs/macro.njk" import registrationSummaryLogs %}
 
 {% block content %}
   <div class="govuk-width-container">
@@ -23,125 +19,16 @@
 
     <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
-    {% set summaryRows = [
-      { key: { text: "Status" }, value: { html: govukTag({ text: registration.status }) } },
-      { key: { text: "Processing type" }, value: { text: registration.processingType } },
-      { key: { text: "Material" }, value: { text: registration.material } },
-      { key: { text: "Site" }, value: { text: registration.site } }
-    ] %}
-    {% if registration.accreditation %}
-      {% set summaryRows = summaryRows.concat([
-        { key: { text: "Accreditation number" }, value: { text: registration.accreditation.accreditationNumber } },
-        { key: { text: "Accreditation status" }, value: { html: govukTag({ text: registration.accreditation.status }) } },
-        { key: { text: "Waste balance (tonnes)" }, value: { text: wasteBalance.amount if wasteBalance else "No data" } },
-        { key: { text: "Waste balance available (tonnes)" }, value: { text: wasteBalance.availableAmount if wasteBalance else "No data" } }
-      ]) %}
-      {# The December split is surfaced only when the balance carries one, so an
-         output accreditation reads as having no December portion rather than a
-         misleading zero. A materialised zero (an eligible in-window balance with
-         an empty December pool) is a defined value and still renders. This relies
-         on the backend omitting the keys entirely when there is no December
-         portion: were it to send null or zero, `is defined` would be true and the
-         rows would reappear with a blank value. #}
-      {% if wasteBalance and wasteBalance.decemberAmount is defined %}
-        {% set summaryRows = summaryRows.concat([
-          { key: { text: "December waste balance (tonnes)" }, value: { text: wasteBalance.decemberAmount } },
-          { key: { text: "December waste balance available (tonnes)" }, value: { text: wasteBalance.decemberAvailableAmount } }
-        ]) %}
-      {% endif %}
-      {% set summaryRows = summaryRows.concat([
-        { key: { text: "Waste balance events" }, value: { html: link(wasteBalanceEventsUrl, "View") } }
-      ]) %}
-      {% if isExporter %}
-        {% set summaryRows = summaryRows.concat([
-          { key: { text: "Overseas sites" }, value: { html: link(overseasSitesUrl, "View") } }
-        ]) %}
-      {% endif %}
-    {% endif %}
-
-    {% set summaryRows = summaryRows.concat([
-      { key: { text: "Waste records" }, value: { html: link(wasteRecordsDownloadUrl, "Download") } }
-    ]) %}
-    {% if registration.accreditation %}
-      {% set summaryRows = summaryRows.concat([
-        { key: { text: "PRN activity" }, value: { html: link(prnActivityDownloadUrl, "Download") } }
-      ]) %}
-    {% endif %}
-
-    <div class="govuk-grid-row">
-      {# Two-thirds so multi-action rows (e.g. Approve | Reject) keep their
-         links horizontally aligned on one line instead of wrapping into a stack. #}
-      <div class="govuk-grid-column-two-thirds">
-        {{ govukSummaryList({ rows: summaryRows }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div id="reports" class="govuk-grid-column-two-thirds">
-        {% if reportRows and reportRows.length %}
-          {% set tableRows = [] %}
-          {% for row in reportRows %}
-            {% set actionsHtml %}
-              {% if row.viewUrl %}
-                <a class="govuk-link govuk-link--no-visited-state" href="{{ row.viewUrl }}">View</a>
-              {% endif %}
-              {% if row.unsubmitUrl %}
-                <br><a class="govuk-link govuk-link--no-visited-state" href="{{ row.unsubmitUrl }}">Unsubmit</a>
-              {% endif %}
-            {% endset %}
-            {% set tableRows = tableRows.concat([[
-              { text: row.formattedPeriod },
-              { text: row.submissionNumber },
-              { text: row.dueDate },
-              { html: govukTag({ text: row.statusText, classes: "app-status-tag" }) } if row.statusText else { text: "" },
-              { html: actionsHtml }
-            ]]) %}
-          {% endfor %}
-
-          {{ govukTable({
-            caption: "Reports",
-            captionClasses: "govuk-table__caption--m",
-            head: [
-              { text: "Period" },
-              { text: "Submission" },
-              { text: "Due" },
-              { text: "Status" },
-              { text: "Actions" }
-            ],
-            rows: tableRows
-          }) }}
-        {% endif %}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div id="summary-logs" class="govuk-grid-column-two-thirds">
-        {% if summaryLogRows and summaryLogRows.length %}
-          {% set summaryLogTableRows = [] %}
-          {% for row in summaryLogRows %}
-            {% set actionsHtml %}
-              <a class="govuk-link govuk-link--no-visited-state" href="{{ row.viewUrl }}">View data</a>
-              <br><a class="govuk-link govuk-link--no-visited-state" href="{{ row.downloadUrl }}">Download</a>
-            {% endset %}
-            {% set summaryLogTableRows = summaryLogTableRows.concat([[
-              { text: row.uploadedAt },
-              { html: govukTag({ text: row.label, classes: row.className }) },
-              { html: actionsHtml }
-            ]]) %}
-          {% endfor %}
-
-          {{ govukTable({
-            caption: "Summary logs",
-            captionClasses: "govuk-table__caption--m",
-            head: [
-              { text: "Uploaded at" },
-              { text: "Status" },
-              { text: "Actions" }
-            ],
-            rows: summaryLogTableRows
-          }) }}
-        {% else %}
-          <p class="govuk-body">No summary logs</p>
-        {% endif %}
-      </div>
-    </div>
+    {{ registrationSummary({
+      registration: registration,
+      wasteBalance: wasteBalance,
+      isExporter: isExporter,
+      wasteBalanceEventsUrl: wasteBalanceEventsUrl,
+      overseasSitesUrl: overseasSitesUrl,
+      wasteRecordsDownloadUrl: wasteRecordsDownloadUrl,
+      prnActivityDownloadUrl: prnActivityDownloadUrl
+    }) }}
+    {{ registrationReports({ rows: reportRows }) }}
+    {{ registrationSummaryLogs({ rows: summaryLogRows }) }}
   </div>
 {% endblock %}

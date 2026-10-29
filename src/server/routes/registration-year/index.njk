@@ -1,0 +1,33 @@
+{% extends 'layout.njk' %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "registration-summary/macro.njk" import registrationSummary %}
+{% from "registration-reports/macro.njk" import registrationReports %}
+{% from "registration-summary-logs/macro.njk" import registrationSummaryLogs %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+          {
+            text: error
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    {{ registrationSummary({
+      registration: registration,
+      wasteBalance: wasteBalance,
+      isExporter: isExporter,
+      wasteBalanceEventsUrl: wasteBalanceEventsUrl,
+      overseasSitesUrl: overseasSitesUrl,
+      prnActivityDownloadUrl: prnActivityDownloadUrl
+    }) }}
+    {{ registrationReports({ rows: reportRows }) }}
+    {{ registrationSummaryLogs({ rows: summaryLogRows }) }}
+  </div>
+{% endblock %}

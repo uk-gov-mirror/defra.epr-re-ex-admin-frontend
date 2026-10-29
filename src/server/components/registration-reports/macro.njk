@@ -1,0 +1,42 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% macro registrationReports(params) %}
+  <div class="govuk-grid-row">
+    <div id="reports" class="govuk-grid-column-two-thirds">
+      {% if params.rows and params.rows.length %}
+        {% set tableRows = [] %}
+        {% for row in params.rows %}
+          {% set actionsHtml %}
+            {% if row.viewUrl %}
+              <a class="govuk-link govuk-link--no-visited-state" href="{{ row.viewUrl }}">View</a>
+            {% endif %}
+            {% if row.unsubmitUrl %}
+              <br><a class="govuk-link govuk-link--no-visited-state" href="{{ row.unsubmitUrl }}">Unsubmit</a>
+            {% endif %}
+          {% endset %}
+          {% set tableRows = tableRows.concat([[
+            { text: row.formattedPeriod },
+            { text: row.submissionNumber },
+            { text: row.dueDate },
+            { html: govukTag({ text: row.statusText, classes: "app-status-tag" }) } if row.statusText else { text: "" },
+            { html: actionsHtml }
+          ]]) %}
+        {% endfor %}
+
+        {{ govukTable({
+          caption: "Reports",
+          captionClasses: "govuk-table__caption--m",
+          head: [
+            { text: "Period" },
+            { text: "Submission" },
+            { text: "Due" },
+            { text: "Status" },
+            { text: "Actions" }
+          ],
+          rows: tableRows
+        }) }}
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

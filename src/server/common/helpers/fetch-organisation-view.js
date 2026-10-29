@@ -2,18 +2,25 @@ import { errorCodes } from '#server/common/enums/error-codes.js'
 import { organisationPath } from '#server/common/helpers/backend-paths.js'
 import { fetchJsonFromBackend } from '#server/common/helpers/fetch-json-from-backend.js'
 import { notFound } from '#server/common/helpers/logging/cdp-boom.js'
+import {
+  heldInYear,
+  statusForYear
+} from '#server/common/helpers/registration-years.js'
 
 /** @import { HapiRequest } from '#server/common/hapi-types.js' */
 
 /**
+ * Every status change, oldest first.
+ * @typedef {{ at: string, status: string }[]} StatusTimeline
+ *
  * @typedef {{
  *   accreditationNumber: string,
- *   status: { current: string }
+ *   status: { current: string, timeline: StatusTimeline }
  * }} AccreditationView
  *
  * @typedef {{
  *   material: string,
- *   status: { current: string },
+ *   status: { current: string, timeline: StatusTimeline },
  *   accreditations: Record<string, AccreditationView>
  * }} RegistrationViewCommon
  *
@@ -99,6 +106,31 @@ export const latestAccreditation = ({ accreditations }) => {
   const { accreditationNumber, status } = accreditations[year]
 
   return { year, accreditationNumber, status: status.current }
+}
+
+/**
+ * The registration's accreditation for `year` with the status it ended the
+ * year on, or `null` when it has none or never held it in the year.
+ * @param {RegistrationView} registration
+ * @param {string} year
+ * @param {string} today - YYYY-MM-DD
+ * @returns {LatestAccreditation | null}
+ */
+export const accreditationFor = ({ accreditations }, year, today) => {
+  if (
+    !Object.hasOwn(accreditations, year) ||
+    !heldInYear(accreditations[year].status.timeline, Number(year))
+  ) {
+    return null
+  }
+
+  const { accreditationNumber, status } = accreditations[year]
+
+  return {
+    year,
+    accreditationNumber,
+    status: statusForYear(status, Number(year), today)
+  }
 }
 
 /**

@@ -1,0 +1,36 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% macro registrationSummaryLogs(params) %}
+  <div class="govuk-grid-row">
+    <div id="summary-logs" class="govuk-grid-column-two-thirds">
+      {% if params.rows and params.rows.length %}
+        {% set summaryLogTableRows = [] %}
+        {% for row in params.rows %}
+          {% set actionsHtml %}
+            <a class="govuk-link govuk-link--no-visited-state" href="{{ row.viewUrl }}">View data</a>
+            <br><a class="govuk-link govuk-link--no-visited-state" href="{{ row.downloadUrl }}">Download</a>
+          {% endset %}
+          {% set summaryLogTableRows = summaryLogTableRows.concat([[
+            { text: row.uploadedAt },
+            { html: govukTag({ text: row.label, classes: row.className }) },
+            { html: actionsHtml }
+          ]]) %}
+        {% endfor %}
+
+        {{ govukTable({
+          caption: "Summary logs",
+          captionClasses: "govuk-table__caption--m",
+          head: [
+            { text: "Uploaded at" },
+            { text: "Status" },
+            { text: "Actions" }
+          ],
+          rows: summaryLogTableRows
+        }) }}
+      {% else %}
+        <p class="govuk-body">No summary logs</p>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

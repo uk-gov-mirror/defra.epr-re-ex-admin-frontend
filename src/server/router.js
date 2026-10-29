@@ -5,6 +5,7 @@ import { organisations } from './routes/organisations/index.js'
 import { organisation } from './routes/organisation/index.js'
 import { organisationOverview } from './routes/organisation-overview/index.js'
 import { registrationOverview } from './routes/registration-overview/index.js'
+import { registrationYear } from './routes/registration-year/index.js'
 import { reports } from './routes/reports/index.js'
 import { health } from './routes/health/index.js'
 import { auth } from './routes/auth/index.js'
@@ -54,6 +55,7 @@ export const router = {
         organisation,
         organisationOverview,
         registrationOverview,
+        registrationYear,
         reports,
         auth,
         defraFormsSubmission,
