@@ -349,27 +349,6 @@ describe('#registrationYearController', () => {
         expect(requested.wasteBalanceYears).toEqual([])
       })
 
-      test("Should show the registration's current status", async () => {
-        useMockBackend({
-          ...reprocessor,
-          status: {
-            current: 'cancelled',
-            timeline: [
-              { at: '2024-01-01T00:00:00.000Z', status: 'approved' },
-              { at: '2025-03-01T00:00:00.000Z', status: 'cancelled' }
-            ]
-          },
-          accreditations: {}
-        })
-
-        const { result } = await get(registeredOnlyUrl(2024))
-        const body = renderPage(result)
-
-        expect(getSummaryRowValue(body, 'Status')).toHaveTextContent(
-          'cancelled'
-        )
-      })
-
       test('Should return not found for a year after the registration was cancelled', async () => {
         useMockBackend({
           ...reprocessor,

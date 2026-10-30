@@ -397,7 +397,7 @@ describe('#accreditedYearGETController', () => {
       )
     })
 
-    test('Should render summary list with status, processing type, material and site', async () => {
+    test('Should render summary list with processing type, material and site, leaving the registration status to the overviews', async () => {
       useMockBackend()
 
       const { result } = await server.inject({
@@ -408,9 +408,7 @@ describe('#accreditedYearGETController', () => {
 
       const body = renderPage(result)
 
-      expect(
-        within(getSummaryRowValue(body, 'Status')).getByText('approved')
-      ).toHaveClass('govuk-tag')
+      expect(queryByText(body, 'Status', { selector: 'dt' })).toBeNull()
       expect(getSummaryRowValue(body, 'Processing type')).toHaveTextContent(
         'reprocessor - input'
       )
@@ -429,13 +427,11 @@ describe('#accreditedYearGETController', () => {
 
       const body = renderPage(result)
 
-      for (const label of ['Status', 'Accreditation status']) {
-        expect(
-          getSummaryRow(body, label).querySelector(
-            '.govuk-summary-list__actions'
-          )
-        ).toBeNull()
-      }
+      expect(
+        getSummaryRow(body, 'Accreditation status').querySelector(
+          '.govuk-summary-list__actions'
+        )
+      ).toBeNull()
     })
 
     test('Should render accreditation rows in summary list when accreditation exists', async () => {

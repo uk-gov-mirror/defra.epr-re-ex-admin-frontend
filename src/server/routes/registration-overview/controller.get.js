@@ -60,7 +60,6 @@ export const registrationOverviewGETController = {
       pageTitle: request.route.settings.app.pageTitle,
       heading: `${organisation.name} - ${registrationNumber}`,
       registration: {
-        status: registration.status.current,
         processingType: processingTypeOf(registration),
         material: registration.material,
         site: siteOf(registration)

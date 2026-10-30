@@ -173,15 +173,13 @@ describe('#registrationOverviewController', () => {
       ])
     })
 
-    test('Should render summary list with status, processing type, material, site and waste records', async () => {
+    test('Should render summary list with processing type, material, site and waste records', async () => {
       useMockBackend()
 
       const { result } = await get()
       const body = renderPage(result)
 
-      expect(
-        within(getSummaryRowValue(body, 'Status')).getByText('approved')
-      ).toHaveClass('govuk-tag')
+      expect(queryByText(body, 'Status', { selector: 'dt' })).toBeNull()
       expect(getSummaryRowValue(body, 'Processing type')).toHaveTextContent(
         'reprocessor - input'
       )
@@ -192,11 +190,6 @@ describe('#registrationOverviewController', () => {
           name: 'Download'
         })
       ).toHaveAttribute('href', `${registrationUrl}/waste-records/download`)
-      expect(
-        getSummaryRow(body, 'Status').querySelector(
-          '.govuk-summary-list__actions'
-        )
-      ).toBeNull()
     })
 
     test('Should leave the year-specific sections to the year pages', async () => {

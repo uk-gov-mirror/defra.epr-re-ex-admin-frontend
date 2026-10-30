@@ -14,7 +14,6 @@
   {% set registration = params.registration %}
   {% set wasteBalance = params.wasteBalance %}
   {% set summaryRows = [
-    { key: { text: "Status" }, value: { html: govukTag({ text: registration.status }) } },
     { key: { text: "Processing type" }, value: { text: registration.processingType } },
     { key: { text: "Material" }, value: { text: registration.material } },
     { key: { text: "Site" }, value: { text: registration.site } }
