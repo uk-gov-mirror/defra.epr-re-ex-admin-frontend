@@ -34,7 +34,6 @@
             {% endset %}
             {% set tableRows = tableRows.concat([[
               { text: row.year },
-              { html: govukTag({ text: row.registrationStatus }) },
               { html: govukTag({ text: row.accreditationStatus, classes: "govuk-tag--grey" if not row.isAccredited }) },
               { text: row.accreditationNumber },
               { html: viewHtml }
@@ -46,7 +45,6 @@
             captionClasses: "govuk-table__caption--m",
             head: [
               { text: "Year" },
-              { text: "Registration status" },
               { text: "Accreditation status" },
               { text: "Accreditation number" },
               { text: "Actions" }

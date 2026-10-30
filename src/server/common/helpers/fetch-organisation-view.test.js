@@ -2,7 +2,7 @@ import { vi } from 'vitest'
 import {
   accreditationFor,
   fetchOrganisationView,
-  latestAccreditation,
+  accreditationsByYear,
   processingTypeOf,
   registrationIn,
   registrationRows,
@@ -104,31 +104,38 @@ describe(registrationIn, () => {
   )
 })
 
-describe(latestAccreditation, () => {
-  it('picks the latest year', () => {
+describe(accreditationsByYear, () => {
+  it('lists every year newest first with its current status', () => {
     expect(
-      latestAccreditation({
+      accreditationsByYear({
         ...reprocessor,
         accreditations: {
-          2027: {
-            accreditationNumber: 'A27ER5001180114PL',
-            status: { current: 'suspended', timeline: [] }
-          },
           2026: {
             accreditationNumber: 'A26ER5001180114PL',
             status: { current: 'approved', timeline: [] }
+          },
+          2027: {
+            accreditationNumber: 'A27ER5001180114PL',
+            status: { current: 'suspended', timeline: [] }
           }
         }
       })
-    ).toStrictEqual({
-      year: '2027',
-      accreditationNumber: 'A27ER5001180114PL',
-      status: 'suspended'
-    })
+    ).toStrictEqual([
+      {
+        year: '2027',
+        accreditationNumber: 'A27ER5001180114PL',
+        status: 'suspended'
+      },
+      {
+        year: '2026',
+        accreditationNumber: 'A26ER5001180114PL',
+        status: 'approved'
+      }
+    ])
   })
 
-  it('is null when the registration has no accreditations', () => {
-    expect(latestAccreditation(exporter)).toBeNull()
+  it('is empty when the registration has no accreditations', () => {
+    expect(accreditationsByYear(exporter)).toStrictEqual([])
   })
 })
 
@@ -208,7 +215,7 @@ describe(registrationRows, () => {
         processingType: 'exporter',
         material: 'paper',
         site: null,
-        accreditation: null
+        accreditations: []
       },
       {
         registrationNumber: 'R26ER5001180042PL',
@@ -216,11 +223,13 @@ describe(registrationRows, () => {
         processingType: 'reprocessor - input',
         material: 'plastic',
         site: '1 Mill Lane',
-        accreditation: {
-          year: '2026',
-          accreditationNumber: 'A26ER5001180114PL',
-          status: 'approved'
-        }
+        accreditations: [
+          {
+            year: '2026',
+            accreditationNumber: 'A26ER5001180114PL',
+            status: 'approved'
+          }
+        ]
       }
     ])
   })

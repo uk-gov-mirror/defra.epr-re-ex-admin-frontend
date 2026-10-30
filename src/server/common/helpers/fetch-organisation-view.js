@@ -47,7 +47,7 @@ import { isAccredited } from '#server/common/helpers/registration-years.js'
  *   registrations: Record<string, RegistrationView>
  * }} OrganisationView
  *
- * @typedef {{ year: string, accreditationNumber: string, status: string }} LatestAccreditation
+ * @typedef {{ year: string, accreditationNumber: string, status: string }} YearAccreditation
  *
  * @typedef {{
  *   registrationNumber: string,
@@ -55,7 +55,7 @@ import { isAccredited } from '#server/common/helpers/registration-years.js'
  *   processingType: string,
  *   material: string,
  *   site: string | null,
- *   accreditation: LatestAccreditation | null
+ *   accreditations: YearAccreditation[]
  * }} RegistrationRow
  */
 
@@ -88,30 +88,25 @@ export const registrationIn = (organisation, registrationNumber) => {
 }
 
 /**
- * The registration's accreditation for its latest year, or `null` when it has none.
+ * The registration's accreditation for every year, newest first.
  * @param {RegistrationView} registration
- * @returns {LatestAccreditation | null}
+ * @returns {YearAccreditation[]}
  */
-export const latestAccreditation = ({ accreditations }) => {
-  const year = Object.keys(accreditations)
-    .sort((a, b) => a.localeCompare(b))
-    .at(-1)
-
-  if (year === undefined) {
-    return null
-  }
-
-  const { accreditationNumber, status } = accreditations[year]
-
-  return { year, accreditationNumber, status: status.current }
-}
+export const accreditationsByYear = ({ accreditations }) =>
+  Object.entries(accreditations)
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([year, { accreditationNumber, status }]) => ({
+      year,
+      accreditationNumber,
+      status: status.current
+    }))
 
 /**
  * The registration's accreditation for `year`, or `null` when it is not
  * approved or suspended.
  * @param {RegistrationView} registration
  * @param {string} year
- * @returns {LatestAccreditation | null}
+ * @returns {YearAccreditation | null}
  */
 export const accreditationFor = (registration, year) => {
   if (!isAccredited(registration, year)) {
@@ -161,5 +156,5 @@ export const registrationRows = (organisation) =>
       processingType: processingTypeOf(registration),
       material: registration.material,
       site: siteOf(registration),
-      accreditation: latestAccreditation(registration)
+      accreditations: accreditationsByYear(registration)
     }))

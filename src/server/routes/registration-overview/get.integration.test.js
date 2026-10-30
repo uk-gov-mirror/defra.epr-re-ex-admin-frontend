@@ -57,11 +57,7 @@ describe('#registrationOverviewController', () => {
     material: 'glass',
     status: {
       current: 'approved',
-      timeline: [
-        { at: '2024-02-01T00:00:00.000Z', status: 'approved' },
-        { at: '2024-11-01T00:00:00.000Z', status: 'suspended' },
-        { at: '2025-01-15T00:00:00.000Z', status: 'approved' }
-      ]
+      timeline: [{ at: '2024-02-01T00:00:00.000Z', status: 'approved' }]
     },
     validFrom: '2024-02-01',
     wasteProcessingType: 'reprocessor',
@@ -231,7 +227,6 @@ describe('#registrationOverviewController', () => {
         getAllByRole(table, 'columnheader').map((th) => th.textContent?.trim())
       ).toEqual([
         'Year',
-        'Registration status',
         'Accreditation status',
         'Accreditation number',
         'Actions'
@@ -245,9 +240,9 @@ describe('#registrationOverviewController', () => {
             )
           )
       ).toEqual([
-        ['2026', 'approved', 'approved', 'ACC-50030-001', 'View 2026'],
-        ['2025', 'approved', 'Not accredited', '-', 'View 2025'],
-        ['2024', 'approved', 'Not accredited', '-', 'View 2024']
+        ['2026', 'approved', 'ACC-50030-001', 'View 2026'],
+        ['2025', 'Not accredited', '-', 'View 2025'],
+        ['2024', 'Not accredited', '-', 'View 2024']
       ])
     })
 
@@ -262,7 +257,7 @@ describe('#registrationOverviewController', () => {
           .slice(1)
           .map(
             (row) =>
-              getAllByRole(row, 'cell')[2]
+              getAllByRole(row, 'cell')[1]
                 .querySelector('.govuk-tag')
                 ?.classList.contains('govuk-tag--grey') ?? false
           )

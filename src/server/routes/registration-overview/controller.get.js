@@ -38,9 +38,8 @@ export const registrationOverviewGETController = {
     const registration = registrationIn(organisation, registrationNumber)
 
     const yearRows = registrationYears(registration, utcToday()).map(
-      ({ year, registrationStatus, accreditation }) => ({
+      ({ year, accreditation }) => ({
         year,
-        registrationStatus,
         isAccredited: accreditation !== null,
         accreditationStatus: accreditation?.status ?? NOT_ACCREDITED,
         accreditationNumber: accreditation?.accreditationNumber ?? NO_VALUE,

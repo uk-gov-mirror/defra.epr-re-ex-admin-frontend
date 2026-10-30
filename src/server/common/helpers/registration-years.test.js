@@ -117,16 +117,14 @@ describe('#registrationYears', () => {
     ).toEqual([
       {
         year: '2027',
-        registrationStatus: 'approved',
         accreditation: { accreditationNumber: 'ACC-27', status: 'approved' }
       },
       {
         year: '2026',
-        registrationStatus: 'approved',
         accreditation: { accreditationNumber: 'ACC-26', status: 'suspended' }
       },
-      { year: '2025', registrationStatus: 'approved', accreditation: null },
-      { year: '2024', registrationStatus: 'approved', accreditation: null }
+      { year: '2025', accreditation: null },
+      { year: '2024', accreditation: null }
     ])
   })
 

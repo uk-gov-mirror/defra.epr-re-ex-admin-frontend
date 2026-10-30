@@ -44,6 +44,16 @@
 
     {% set tableRows = [] %}
     {% for registration in registrations %}
+      {% set accreditationNumbersHtml %}
+        {%- for accreditation in registration.accreditations -%}
+          {% if not loop.first %}<br>{% endif %}{{ accreditation.accreditationNumber }}
+        {%- endfor -%}
+      {% endset %}
+      {% set accreditationStatusesHtml %}
+        {%- for accreditation in registration.accreditations -%}
+          {% if not loop.first %}<br>{% endif %}{{ govukTag({ text: accreditation.year ~ ': ' ~ accreditation.status }) }}
+        {%- endfor -%}
+      {% endset %}
       {% set actionsHtml = '<a class="govuk-link govuk-link--no-visited-state" href="' ~ registration.viewUrl ~ '">View</a>' %}
       {% set row = [
         { text: registration.registrationNumber },
@@ -51,8 +61,8 @@
         { text: registration.processingType },
         { text: registration.material },
         { text: registration.site },
-        { text: registration.accreditation.accreditationNumber if registration.accreditation else '-' },
-        { html: govukTag({ text: registration.accreditation.status }) if registration.accreditation else '-' },
+        { html: accreditationNumbersHtml if registration.accreditations.length else '-' },
+        { html: accreditationStatusesHtml if registration.accreditations.length else '-' },
         { html: actionsHtml }
       ] %}
       {% set tableRows = tableRows.concat([row]) %}
@@ -66,7 +76,7 @@
         { text: "Material" },
         { text: "Site" },
         { text: "Accreditation number" },
-        { text: "Accreditation status" },
+        { text: "Accreditation" },
         { text: "Actions" }
       ],
       rows: tableRows

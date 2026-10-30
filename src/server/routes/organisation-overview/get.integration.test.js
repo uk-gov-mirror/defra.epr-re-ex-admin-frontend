@@ -147,7 +147,7 @@ describe('#organisationOverviewController', () => {
       expect($(headers[3]).text()).toEqual('Material')
       expect($(headers[4]).text()).toEqual('Site')
       expect($(headers[5]).text()).toEqual('Accreditation number')
-      expect($(headers[6]).text()).toEqual('Accreditation status')
+      expect($(headers[6]).text()).toEqual('Accreditation')
       expect($(headers[7]).text()).toEqual('Actions')
     })
 
@@ -167,7 +167,7 @@ describe('#organisationOverviewController', () => {
       expect($(cells[4]).text().trim()).toEqual('')
       expect($(cells[5]).text().trim()).toEqual('ACC-50030-001')
       expect($(cells[6]).find('strong.govuk-tag').text().trim()).toEqual(
-        'approved'
+        '2026: approved'
       )
 
       const viewLink = $(cells[7]).find('a')
@@ -205,7 +205,7 @@ describe('#organisationOverviewController', () => {
       expect($(cells[6]).text().trim()).toEqual('-')
     })
 
-    test('Should render the latest year of accreditation', async () => {
+    test('Should render every year of accreditation, newest first', async () => {
       stubView({
         ...organisationView,
         registrations: {
@@ -229,10 +229,18 @@ describe('#organisationOverviewController', () => {
 
       const $ = cheerio.load(result)
       const cells = $('table tbody tr td')
-      expect($(cells[5]).text().trim()).toEqual('ACC-50030-027')
-      expect($(cells[6]).find('strong.govuk-tag').text().trim()).toEqual(
-        'suspended'
-      )
+      expect(
+        $(cells[5])
+          .html()
+          ?.split('<br>')
+          .map((number) => number.trim())
+      ).toStrictEqual(['ACC-50030-027', 'ACC-50030-026'])
+      expect(
+        $(cells[6])
+          .find('strong.govuk-tag')
+          .map((_, tag) => $(tag).text().trim())
+          .get()
+      ).toStrictEqual(['2027: suspended', '2026: approved'])
     })
 
     test('Should list the registrations by registration number', async () => {

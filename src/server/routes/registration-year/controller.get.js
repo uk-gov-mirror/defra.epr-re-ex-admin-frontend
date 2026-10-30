@@ -25,7 +25,7 @@ import {
 } from '#server/common/helpers/registration-years.js'
 
 /**
- * @import { LatestAccreditation, OrganisationView, RegistrationView } from '#server/common/helpers/fetch-organisation-view.js'
+ * @import { YearAccreditation, OrganisationView, RegistrationView } from '#server/common/helpers/fetch-organisation-view.js'
  * @import { AccreditationKeys } from '#server/common/helpers/natural-keys/swap-keys.js'
  */
 
@@ -34,7 +34,7 @@ import {
  * @param {OrganisationView} organisation
  * @param {RegistrationView} registration
  * @param {AccreditationKeys} keys
- * @returns {LatestAccreditation}
+ * @returns {YearAccreditation}
  */
 const accreditedYear = (organisation, registration, keys) => {
   const accreditation = accreditationFor(registration, keys.year)
