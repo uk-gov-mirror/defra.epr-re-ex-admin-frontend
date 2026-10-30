@@ -165,6 +165,7 @@ describe('report-unsubmit', () => {
           registrations: {
             [registrationNumber]: {
               material: 'paper',
+              validFrom: '2026-01-01',
               status: {
                 current: 'approved',
                 timeline: [

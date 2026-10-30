@@ -54,8 +54,7 @@ import { isAccredited } from '#server/common/helpers/registration-years.js'
  *   status: string,
  *   processingType: string,
  *   material: string,
- *   site: string | null,
- *   accreditations: YearAccreditation[]
+ *   site: string | null
  * }} RegistrationRow
  */
 
@@ -86,20 +85,6 @@ export const registrationIn = (organisation, registrationNumber) => {
 
   return organisation.registrations[registrationNumber]
 }
-
-/**
- * The registration's accreditation for every year, newest first.
- * @param {RegistrationView} registration
- * @returns {YearAccreditation[]}
- */
-export const accreditationsByYear = ({ accreditations }) =>
-  Object.entries(accreditations)
-    .sort(([a], [b]) => b.localeCompare(a))
-    .map(([year, { accreditationNumber, status }]) => ({
-      year,
-      accreditationNumber,
-      status: status.current
-    }))
 
 /**
  * The registration's accreditation for `year`, or `null` when it is not
@@ -155,6 +140,5 @@ export const registrationRows = (organisation) =>
       status: registration.status.current,
       processingType: processingTypeOf(registration),
       material: registration.material,
-      site: siteOf(registration),
-      accreditations: accreditationsByYear(registration)
+      site: siteOf(registration)
     }))

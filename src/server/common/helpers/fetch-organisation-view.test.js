@@ -2,7 +2,6 @@ import { vi } from 'vitest'
 import {
   accreditationFor,
   fetchOrganisationView,
-  accreditationsByYear,
   processingTypeOf,
   registrationIn,
   registrationRows,
@@ -104,41 +103,6 @@ describe(registrationIn, () => {
   )
 })
 
-describe(accreditationsByYear, () => {
-  it('lists every year newest first with its current status', () => {
-    expect(
-      accreditationsByYear({
-        ...reprocessor,
-        accreditations: {
-          2026: {
-            accreditationNumber: 'A26ER5001180114PL',
-            status: { current: 'approved', timeline: [] }
-          },
-          2027: {
-            accreditationNumber: 'A27ER5001180114PL',
-            status: { current: 'suspended', timeline: [] }
-          }
-        }
-      })
-    ).toStrictEqual([
-      {
-        year: '2027',
-        accreditationNumber: 'A27ER5001180114PL',
-        status: 'suspended'
-      },
-      {
-        year: '2026',
-        accreditationNumber: 'A26ER5001180114PL',
-        status: 'approved'
-      }
-    ])
-  })
-
-  it('is empty when the registration has no accreditations', () => {
-    expect(accreditationsByYear(exporter)).toStrictEqual([])
-  })
-})
-
 describe(accreditationFor, () => {
   test("returns the year's accreditation with its current status", () => {
     expect(accreditationFor(reprocessor, '2026')).toEqual({
@@ -214,22 +178,14 @@ describe(registrationRows, () => {
         status: 'approved',
         processingType: 'exporter',
         material: 'paper',
-        site: null,
-        accreditations: []
+        site: null
       },
       {
         registrationNumber: 'R26ER5001180042PL',
         status: 'cancelled',
         processingType: 'reprocessor - input',
         material: 'plastic',
-        site: '1 Mill Lane',
-        accreditations: [
-          {
-            year: '2026',
-            accreditationNumber: 'A26ER5001180114PL',
-            status: 'approved'
-          }
-        ]
+        site: '1 Mill Lane'
       }
     ])
   })
