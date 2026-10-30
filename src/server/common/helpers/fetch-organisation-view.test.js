@@ -22,6 +22,7 @@ const mockRequest = /** @type {Request} */ ({})
 /** @type {RegistrationView} */
 const exporter = {
   material: 'paper',
+  validFrom: '2026-01-01',
   status: { current: 'approved', timeline: [] },
   wasteProcessingType: 'exporter',
   accreditations: {}
@@ -30,6 +31,7 @@ const exporter = {
 /** @type {RegistrationView} */
 const reprocessor = {
   material: 'plastic',
+  validFrom: '2026-01-01',
   status: { current: 'cancelled', timeline: [] },
   wasteProcessingType: 'reprocessor',
   reprocessingType: 'input',
@@ -131,24 +133,8 @@ describe(latestAccreditation, () => {
 })
 
 describe(accreditationFor, () => {
-  const today = '2026-10-29'
-
-  /**
-   * @param {string} current
-   * @param {{ at: string, status: string }[]} timeline
-   */
-  const accreditedIn2025 = (current, timeline) => ({
-    ...reprocessor,
-    accreditations: {
-      2025: {
-        accreditationNumber: 'A25ER5001180114PL',
-        status: { current, timeline }
-      }
-    }
-  })
-
-  test("returns the year's accreditation", () => {
-    expect(accreditationFor(reprocessor, '2026', today)).toEqual({
+  test("returns the year's accreditation with its current status", () => {
+    expect(accreditationFor(reprocessor, '2026')).toEqual({
       year: '2026',
       accreditationNumber: 'A26ER5001180114PL',
       status: 'approved'
@@ -156,47 +142,24 @@ describe(accreditationFor, () => {
   })
 
   test('returns null for a year without one', () => {
-    expect(accreditationFor(reprocessor, '2025', today)).toBeNull()
+    expect(accreditationFor(reprocessor, '2025')).toBeNull()
   })
 
-  test.each(['created', 'rejected'])(
-    'returns null for a %s accreditation, which was never held',
-    (status) => {
-      expect(
-        accreditationFor(
-          accreditedIn2025(status, [
-            { at: '2025-01-01T00:00:00.000Z', status }
-          ]),
-          '2025',
-          today
-        )
-      ).toBeNull()
-    }
-  )
-
-  test('returns a suspended accreditation, which is held', () => {
+  test('returns null for an accreditation not approved or suspended', () => {
     expect(
       accreditationFor(
-        accreditedIn2025('suspended', [
-          { at: '2025-01-01T00:00:00.000Z', status: 'suspended' }
-        ]),
-        '2025',
-        today
-      )?.status
-    ).toBe('suspended')
-  })
-
-  test('gives a past year the status the accreditation ended it on', () => {
-    expect(
-      accreditationFor(
-        accreditedIn2025('cancelled', [
-          { at: '2025-01-01T00:00:00.000Z', status: 'approved' },
-          { at: '2026-03-01T00:00:00.000Z', status: 'cancelled' }
-        ]),
-        '2025',
-        today
-      )?.status
-    ).toBe('approved')
+        {
+          ...reprocessor,
+          accreditations: {
+            2025: {
+              accreditationNumber: 'A25ER5001180114PL',
+              status: { current: 'rejected', timeline: [] }
+            }
+          }
+        },
+        '2025'
+      )
+    ).toBeNull()
   })
 })
 

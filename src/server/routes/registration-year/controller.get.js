@@ -16,8 +16,7 @@ import {
   toReportRows
 } from '#server/common/helpers/registration-sections.js'
 import {
-  approvedYears,
-  statusForYear,
+  registeredYears,
   utcToday
 } from '#server/common/helpers/registration-years.js'
 
@@ -34,7 +33,7 @@ import {
  * @returns {LatestAccreditation}
  */
 const accreditedYear = (organisation, registration, keys) => {
-  const accreditation = accreditationFor(registration, keys.year, utcToday())
+  const accreditation = accreditationFor(registration, keys.year)
 
   if (!accreditation) {
     throw notFound(
@@ -62,10 +61,8 @@ const accreditedYear = (organisation, registration, keys) => {
  */
 const registeredOnlyYear = (organisation, registration, keys) => {
   const registeredOnly =
-    !accreditationFor(registration, keys.year, utcToday()) &&
-    approvedYears(registration.status.timeline, utcToday()).includes(
-      Number(keys.year)
-    )
+    !accreditationFor(registration, keys.year) &&
+    registeredYears(registration, utcToday()).includes(Number(keys.year))
 
   if (!registeredOnly) {
     throw notFound(
@@ -123,7 +120,7 @@ const registrationYearGETController = ({ accredited }) => ({
       pageTitle: request.route.settings.app.pageTitle,
       heading: `${organisation.name} - ${registrationNumber} - ${year} ${accredited ? 'accredited' : 'registered only'}`,
       registration: {
-        status: statusForYear(registration.status, Number(year), utcToday()),
+        status: registration.status.current,
         processingType: processingTypeOf(registration),
         material: registration.material,
         site: siteOf(registration),
